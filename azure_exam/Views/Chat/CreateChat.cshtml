@@ -1,0 +1,20 @@
+﻿@{
+    ViewBag.Title = "Create chat";
+}
+
+<h2>Create new chat</h2>
+
+<form asp-action="CreateChat" method="post">
+    <div class="form-group">
+        <label for="chatId">Chat ID:</label>
+        <input type="text" id="chatId" name="chatId" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-success">Create</button>
+</form>
+
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div class="alert alert-danger">
+        @ViewBag.Message
+    </div>
+}

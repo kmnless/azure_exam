@@ -1,0 +1,19 @@
+﻿@model IEnumerable<Chat>
+
+<h2>Chats List</h2>
+
+@if (Model != null && !Model.Any())
+{
+    <p>No chats available. Click the button to create a new chat.</p>
+}
+
+<ul>
+    @foreach (var chat in Model)
+    {
+        <li>
+            <a class="text-dark" href="@Url.Action("Chat", "Chat", new { chatId = chat.chatId })">@chat.chatId, expires in: @(Math.Round((chat.CreatedAt.AddMinutes(30) - DateTime.UtcNow).TotalMinutes,2)) minutes</a>
+        </li>
+    }
+</ul>
+
+<a href="@Url.Action("CreateChat", "Chat")" class="btn btn-success">Create chat</a>
