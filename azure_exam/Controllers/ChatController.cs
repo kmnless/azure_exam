@@ -7,10 +7,12 @@ namespace azure_exam.Controllers
     public class ChatController : Controller
     {
         private readonly CosmosDbService _cosmosDbService;
+        private readonly BlobStorageService _blobStorageService;
 
-        public ChatController(CosmosDbService cosmosDbService)
+        public ChatController(CosmosDbService cosmosDbService, BlobStorageService blobStorageService)
         {
             _cosmosDbService = cosmosDbService;
+            _blobStorageService = blobStorageService;
         }
 
         [HttpGet]
@@ -64,26 +66,34 @@ namespace azure_exam.Controllers
             return View(chat);
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> SendMessage(string chatId, string messageContent, string sender)
+        public async Task<IActionResult> SendMessage(string chatId, string messageContent, string sender, IFormFile? file)
         {
-            if (string.IsNullOrEmpty(messageContent))
+            if (string.IsNullOrEmpty(messageContent) && file == null)
             {
-                return BadRequest("Message is empty");
+                return BadRequest("Message is empty and no file attached");
             }
+
             HttpContext.Session.SetString("Sender", sender);
             HttpContext.Session.SetString("SenderTimestamp", DateTime.UtcNow.ToString());
+
+            string? fileUrl = null;
+            if (file != null && file.Length > 0)
+            {
+                fileUrl = await _blobStorageService.UploadFileAsync(file);
+            }
+
             var message = new Message
             {
                 Sender = sender,
                 Text = messageContent,
+                FileUrl = fileUrl, 
                 Timestamp = DateTime.UtcNow
             };
 
             await _cosmosDbService.AddMessageToChatAsync(chatId, message);
             return RedirectToAction("Chat", new { chatId });
         }
-    }
 
+    }
 }

@@ -20,7 +20,7 @@ namespace azure_exam.Services
             var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
             await containerClient.CreateIfNotExistsAsync();
 
-            string fileName = file.GetHashCode().ToString() + file.FileName;
+            string fileName = Guid.NewGuid().ToString() + Path.GetFileNameWithoutExtension(file.FileName) + Path.GetExtension(file.FileName);
 
             var blobClient = containerClient.GetBlobClient(fileName);
 
@@ -29,6 +29,6 @@ namespace azure_exam.Services
 
             return blobClient.Uri.ToString();
         }
-    }
 
+    }
 }

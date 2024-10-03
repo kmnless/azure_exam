@@ -14,24 +14,36 @@ else
         {
             <li>
                 <strong>@message.Sender</strong>: @message.Text <small>(@message.Timestamp)</small>
+                @if (!string.IsNullOrEmpty(message.FileUrl))
+                {
+                    <br />
+                    <a href="@message.FileUrl" target="_blank">Download attached file</a>
+                }
             </li>
         }
     </ul>
-}
 
+}
 
 <h3 class="text-black">Send message</h3>
 
-<form asp-action="SendMessage" method="post">
+<form asp-action="SendMessage" method="post" enctype="multipart/form-data">
     <input type="hidden" name="chatId" value="@Model.chatId" />
+
     <div class="form-group">
         <label for="sender">Sender:</label>
-        <input type="text" id="sender" name="sender" class="form-control" required
-               value="@ViewBag.Sender" />
+        <input type="text" id="sender" name="sender" class="form-control" required value="@ViewBag.Sender" />
     </div>
+
     <div class="form-group">
         <label for="messageContent">Message:</label>
         <input type="text" id="messageContent" name="messageContent" class="form-control" required />
     </div>
+
+    <div class="form-group">
+        <label for="file">Attach file:</label>
+        <input type="file" id="file" name="file" class="form-control" />
+    </div>
+
     <button type="submit" class="btn btn-primary">Send</button>
 </form>
